@@ -11,7 +11,7 @@ const StockInputs = () => {
 
 
     return (
-       <StockContext.Provider value={{stockSymbol, setStockSymbol, quantity, setQuantity, purchasePrice, setPurchasePrice}} >
+       <StockContext.Provider value={{stockSymbol, quantity, purchasePrice}} >
         <div>
               <div className="inputs">
 

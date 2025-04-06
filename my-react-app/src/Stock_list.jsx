@@ -5,44 +5,45 @@ import StockContext from './StockContext'
 const StockList = () => {
     const { stockSymbol, quantity, purchasePrice } = useContext(StockContext)
     const [displayText, setDisplayText] = useState("No stocks added yet.")
+    const [currentPrice, setCurrentPrice] = useState()
+    const [profitLoss, setProfitLoss] = useState()
+
 
     useEffect(() => { 
-            fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${stockSymbol}&apikey=demo`)
+        if (stockSymbol !== "") {
+            fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=IBM&apikey=demo`)
             .then(response => response.json())
-            .then((data) => {
-                    if (stockSymbol === data["Global Quote"]["01. symbol"]) {
-                        setDisplayText(data["Global Quote"]["01. symbol"])
-                    } else {
-                        setDisplayText("That is not a valid stock symbol")
-                    }
-                })
-                .catch(error => console.error("Error fetching stock data:", error))
-        }
+            .then((data) => {setCurrentPrice(data["Global Quote"]["05. price"])})
+            
+            .catch(error => console.error("Error fetching stock data:", error))
+        }}
     , [stockSymbol])
 
+
     const handleOnClick = () => {
-        setDisplayText(`Symbol: ${stockSymbol} \n Quantity: ${quantity} \n Purchase Price: ${purchasePrice}`);
-    };
+        const profitOrLoss = (currentPrice - purchasePrice) * quantity
+
+        setDisplayText(`Symbol: ${stockSymbol}\nQuantity: ${quantity}\nPurchase Price: ${purchasePrice}`)
+        setCurrentPrice(`Current Price: ${currentPrice}`)
+        setProfitLoss(profitOrLoss)
+    }
+
+
 
     return (
         <div>
             <button onClick={handleOnClick}>Add Stock</button>
             <h2>Stock List</h2>
-            <p>{displayText}</p>
+            <div className='stocklist'>
+                <p>{displayText}</p>
+                <p>{currentPrice}</p>
+                <p style={{ color: profitLoss >= 0 ? 'green' : 'red' }}>
+                    Profit/Loss: {profitLoss}
+                </p>
+            </div>
 
         </div>
     );
 };
 
 export default StockList;
-
-
-/* Problem 1: Link API and user inputs stock symbols to stock list */
-
-/* Problem 2: Show user inputs in Stock list */
-
-/* Problem 3: Link button click to Stock list */
-
-
-/* Stock list should include: 
-Symbol, quantity, purchase price, current price (API), Profit/loss (API) */
